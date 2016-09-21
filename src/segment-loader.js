@@ -149,6 +149,7 @@ export default class SegmentLoader extends videojs.EventTarget {
     this.bandwidth = settings.bandwidth;
     this.roundTrip = NaN;
     this.resetStats_();
+    this.flvurl = settings.flvurl;
 
     // private settings
     this.hasPlayed_ = settings.hasPlayed;
@@ -507,7 +508,8 @@ export default class SegmentLoader extends videojs.EventTarget {
     // - The "timestampOffset" for the start of this segment is less than
     //   the currently set timestampOffset
     segmentInfo.timestampOffset = this.sourceUpdater_.timestampOffset();
-    if (true || segment.timeline !== this.currentTimeline_ ||
+    var alwaysPassStartOfSegment = this.flvurl;
+    if (alwaysPassStartOfSegment || segment.timeline !== this.currentTimeline_ ||
         startOfSegment < this.sourceUpdater_.timestampOffset()) {
       segmentInfo.timestampOffset = startOfSegment;
     }

@@ -281,6 +281,8 @@ class HlsHandler extends Component {
 
     // handle global & Source Handler level options
     this.options_ = videojs.mergeOptions(videojs.options.hls || {}, options.hls);
+    let flvurlRE = /^(audio|video|application)\/(x-|vnd\.apple\.)?flvurl/i;
+    this.options_.flvurl = flvurlRE.test(source.type);
     this.setOptions_();
 
     // listen for fullscreenchange events for this player so that we
@@ -497,6 +499,7 @@ class HlsHandler extends Component {
  * this object in normal usage.
  */
 const HlsSourceHandler = function(mode) {
+  let mpegurlRE = /^(audio|video|application)\/(x-|vnd\.apple\.)?mpegurl/i;
   return {
     canHandleSource(srcObj) {
       // this forces video.js to skip this tech/mode if its not the one we have been
@@ -506,7 +509,12 @@ const HlsSourceHandler = function(mode) {
           videojs.options.hls.mode !== mode) {
         return false;
       }
-      return HlsSourceHandler.canPlayType(srcObj.type);
+
+      if (mode === 'flash') {
+        return mpegurlRE.test(srcObj.type) && HlsSourceHandler.canPlayType(srcObj.type);
+      } else {
+        return HlsSourceHandler.canPlayType(srcObj.type);
+      }
     },
     handleSource(source, tech, options) {
       if (mode === 'flash') {
@@ -532,7 +540,13 @@ const HlsSourceHandler = function(mode) {
       return tech.hls;
     },
     canPlayType(type) {
-      if (HlsSourceHandler.canPlayType(type)) {
+      let canplay = false;
+      if (mode === 'flash') {
+        canplay = mpegurlRE.test(type) && HlsSourceHandler.canPlayType(type);
+      } else {
+        canplay = HlsSourceHandler.canPlayType(type);
+      }
+      if (canplay) {
         return 'maybe';
       }
       return '';
@@ -607,12 +621,13 @@ Hls.comparePlaylistResolution = function(left, right) {
 
 HlsSourceHandler.canPlayType = function(type) {
   let mpegurlRE = /^(audio|video|application)\/(x-|vnd\.apple\.)?mpegurl/i;
+  let flvurlRE = /^(audio|video|application)\/(x-|vnd\.apple\.)?flvurl/i;
 
   // favor native HLS support if it's available
   if (Hls.supportsNativeHls) {
     return false;
   }
-  return mpegurlRE.test(type);
+  return mpegurlRE.test(type) || flvurlRE.test(type);
 };
 
 if (typeof videojs.MediaSource === 'undefined' ||

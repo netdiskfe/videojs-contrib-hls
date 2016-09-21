@@ -177,7 +177,8 @@ export class MasterPlaylistController extends videojs.EventTarget {
       tech,
       bandwidth,
       externHls,
-      useCueTags
+      useCueTags,
+      flvurl
     } = options;
 
     if (!url) {
@@ -221,7 +222,8 @@ export class MasterPlaylistController extends videojs.EventTarget {
       seeking: () => this.tech_.seeking(),
       setCurrentTime: (a) => this.tech_.setCurrentTime(a),
       hasPlayed: () => this.tech_.played().length !== 0,
-      bandwidth
+      bandwidth,
+      flvurl
     };
 
     // setup playlist loaders
