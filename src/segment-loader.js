@@ -507,7 +507,7 @@ export default class SegmentLoader extends videojs.EventTarget {
     // - The "timestampOffset" for the start of this segment is less than
     //   the currently set timestampOffset
     segmentInfo.timestampOffset = this.sourceUpdater_.timestampOffset();
-    if (segment.timeline !== this.currentTimeline_ ||
+    if (true || segment.timeline !== this.currentTimeline_ ||
         startOfSegment < this.sourceUpdater_.timestampOffset()) {
       segmentInfo.timestampOffset = startOfSegment;
     }
