@@ -686,6 +686,7 @@ export default class SegmentLoader extends videojs.EventTarget {
     let segment;
     let keyXhrRequest;
     let view;
+    let abortWhenError = false;
 
     // timeout of previously aborted request
     if (!this.xhr_ ||
@@ -708,7 +709,7 @@ export default class SegmentLoader extends videojs.EventTarget {
     }
 
     // trigger an event for other errors
-    if (!request.aborted && error) {
+    if (!request.aborted && error && abortWhenError) {
       // abort will clear xhr_
       keyXhrRequest = this.xhr_.keyXhr;
       this.abort_();
