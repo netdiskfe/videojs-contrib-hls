@@ -85,7 +85,6 @@
     "test/"
   ],
   "dependencies": {
-    "m3u8-parser": "^1.0.2",
     "aes-decrypter": "^1.0.3",
     "videojs-swf": "^5.0.2",
     "global": "^4.3.0"

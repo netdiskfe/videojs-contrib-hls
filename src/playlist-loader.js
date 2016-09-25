@@ -473,6 +473,17 @@ const PlaylistLoader = function(srcUrl, hls, withCredentials) {
       parser.push(req.responseText);
       parser.end();
 
+      if (parser.hasError) {
+        loader.error = {
+          status: req.status,
+          message: 'HLS playlist request error at URL: ' + srcUrl,
+          responseText: req.responseText,
+          // MEDIA_ERR_NETWORK
+          code: 2
+        };
+        return loader.trigger('error');
+      }
+
       loader.state = 'HAVE_MASTER';
 
       parser.manifest.uri = srcUrl;
