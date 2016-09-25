@@ -383,7 +383,7 @@ export default class SegmentLoader extends videojs.EventTarget {
     let segment;
     let mediaIndex;
 
-    if (!playlist.segments.length) {
+    if (!playlist.segments || !playlist.segments.length) {
       return;
     }
 

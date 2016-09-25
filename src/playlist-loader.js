@@ -564,6 +564,10 @@ PlaylistLoader.prototype.updateMediaPlaylist_ = function(update) {
     return;
   }
 
+  if (!update.segments) {
+    return;
+  }
+
   // try using precise timing from first segment of the updated
   // playlist
   if (update.segments.length) {
