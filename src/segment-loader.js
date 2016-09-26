@@ -709,7 +709,10 @@ export default class SegmentLoader extends videojs.EventTarget {
     }
 
     // trigger an event for other errors
-    if (!request.aborted && error && abortWhenError) {
+    if (!request.aborted && error) {
+      if (!abortWhenError) {
+        return;
+      }
       // abort will clear xhr_
       keyXhrRequest = this.xhr_.keyXhr;
       this.abort_();
