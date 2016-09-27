@@ -510,7 +510,7 @@ const HlsSourceHandler = function(mode) {
         return false;
       }
 
-      if (mode === 'flash') {
+      if (mode === 'flash' || Hls.supportsNativeHls) {
         return mpegurlRE.test(srcObj.type) && HlsSourceHandler.canPlayType(srcObj.type);
       } else {
         return HlsSourceHandler.canPlayType(srcObj.type);
@@ -541,7 +541,7 @@ const HlsSourceHandler = function(mode) {
     },
     canPlayType(type) {
       let canplay = false;
-      if (mode === 'flash') {
+      if (mode === 'flash' || Hls.supportsNativeHls) {
         canplay = mpegurlRE.test(type) && HlsSourceHandler.canPlayType(type);
       } else {
         canplay = HlsSourceHandler.canPlayType(type);
@@ -624,9 +624,10 @@ HlsSourceHandler.canPlayType = function(type) {
   let flvurlRE = /^(audio|video|application)\/(x-|vnd\.apple\.)?flvurl/i;
 
   // favor native HLS support if it's available
-  if (Hls.supportsNativeHls) {
-    return false;
-  }
+  // if (Hls.supportsNativeHls) {
+  //   return false;
+  // }
+
   return mpegurlRE.test(type) || flvurlRE.test(type);
 };
 
@@ -638,7 +639,7 @@ if (typeof videojs.MediaSource === 'undefined' ||
 
 // register source handlers with the appropriate techs
 if (MediaSource.supportsNativeMediaSources()) {
-  videojs.getComponent('Html5').registerSourceHandler(HlsSourceHandler('html5'));
+  videojs.getComponent('Html5').registerSourceHandler(HlsSourceHandler('html5'), 0);
 }
 if (window.Uint8Array) {
   videojs.getComponent('Flash').registerSourceHandler(HlsSourceHandler('flash'));
