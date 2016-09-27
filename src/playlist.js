@@ -109,7 +109,7 @@ const forwardDuration = function(playlist, endSequence) {
   * @return {Number} the duration between the first available segment
   * and end index.
   */
-const intervalDuration = function(playlist, endSequence, expired) {
+export const intervalDuration = function(playlist, endSequence, expired) {
   let backward;
   let forward;
 
@@ -359,6 +359,7 @@ export const getMediaIndexForTime_ = function(playlist, time, expired) {
   return lastSegment;
 };
 
+Playlist.intervalDuration = intervalDuration;
 Playlist.duration = duration;
 Playlist.seekable = seekable;
 Playlist.getMediaIndexForTime_ = getMediaIndexForTime_;

@@ -893,12 +893,17 @@ export class MasterPlaylistController extends videojs.EventTarget {
   updateDuration() {
     let oldDuration = this.mediaSource.duration;
     let newDuration = Hls.Playlist.duration(this.masterPlaylistLoader_.media());
+    if (newDuration === Infinity) {
+      newDuration = Hls.Playlist.intervalDuration(this.masterPlaylistLoader_.media(), undefined, 0);
+    }
     let buffered = this.tech_.buffered();
     let setDuration = () => {
-      this.mediaSource.duration = newDuration;
-      this.tech_.trigger('durationchange');
+      if (newDuration > oldDuration || isNaN(oldDuration)) {
+        this.mediaSource.duration = newDuration;
+        this.tech_.trigger('durationchange');
 
-      this.mediaSource.removeEventListener('sourceopen', setDuration);
+        this.mediaSource.removeEventListener('sourceopen', setDuration);
+      }
     };
 
     if (buffered.length > 0) {
