@@ -744,6 +744,7 @@ export class MasterPlaylistController extends videojs.EventTarget {
     // trying to load the master OR while we were disposing of the tech
     if (!currentPlaylist) {
       this.error = error;
+      this.tech_.el_.errorMsg = error;
       if (this.mediaSource.readyState === 'open') {
         this.mediaSource.endOfStream('network');
       } else {
