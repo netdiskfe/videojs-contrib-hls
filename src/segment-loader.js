@@ -869,6 +869,11 @@ export default class SegmentLoader extends videojs.EventTarget {
     segment = segmentInfo.playlist.segments[segmentInfo.mediaIndex];
     this.currentTimeline_ = segmentInfo.timeline;
 
+    if (!this.alreadyAppended) {
+      segmentInfo.timestampOffset = 0;
+      this.alreadyAppended = true;
+    }
+
     if (segmentInfo.timestampOffset !== this.sourceUpdater_.timestampOffset()) {
       if (this.flvurl) {
         this.sourceUpdater_.duration(segmentInfo.duration);
