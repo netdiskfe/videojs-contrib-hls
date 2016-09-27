@@ -681,10 +681,10 @@ export class MasterPlaylistController extends videojs.EventTarget {
       this.masterPlaylistLoader_.trigger('firstplay');
       this.hasPlayed_ = true;
 
-      // seek to the latest media position for live videos
+      // seek to the first media position for live videos
       seekable = this.seekable();
       if (seekable.length) {
-        this.tech_.setCurrentTime(seekable.end(0));
+        this.tech_.setCurrentTime(seekable.start(0));
       }
 
       // now that we seeked to the current time, load the segment
