@@ -595,6 +595,13 @@ export default class SegmentLoader extends videojs.EventTarget {
     return removeToTime;
   }
 
+  getByteRange(url) {
+    const regex = /[?&]range=([^&#]*)/gi;
+    let m = null;
+    m = regex.exec(url);
+    return m ? m[1].split('-') : [];
+  }
+
   /**
    * load a specific segment from a request into the buffer
    *
@@ -686,6 +693,7 @@ export default class SegmentLoader extends videojs.EventTarget {
     let segment;
     let keyXhrRequest;
     let view;
+    let byterange;
     let abortWhenError = false;
 
     // timeout of previously aborted request
@@ -712,6 +720,14 @@ export default class SegmentLoader extends videojs.EventTarget {
     if (!request.aborted && error) {
       if (!abortWhenError) {
         this.handleUpdateEnd_();
+        this.hls_.player_.triggerEvent('loaderror', {
+          status: request.status,
+          message: request === keyXhrRequest ?
+            'HLS key request error at URL: ' + segment.key.uri :
+            'HLS segment request error at URL: ' + segmentInfo.uri,
+          code: 2,
+          xhr: request
+        });
         return;
       }
       // abort will clear xhr_
@@ -734,6 +750,18 @@ export default class SegmentLoader extends videojs.EventTarget {
     if (!request.response) {
       this.abort_();
       return;
+    }
+
+    byterange = this.getByteRange(request.url);
+    if (byterange.length === 2 && byterange[1] - byterange[0] !== request.response.length) {
+      this.hls_.player_.triggerEvent('loaderror', {
+        status: request.status,
+        message: request === keyXhrRequest ?
+          'HLS key response error at URL: ' + segment.key.uri :
+          'HLS segment response error at URL: ' + segmentInfo.uri,
+        code: 3,
+        xhr: request
+      });
     }
 
     if (request === this.xhr_.segmentXhr) {
@@ -868,11 +896,6 @@ export default class SegmentLoader extends videojs.EventTarget {
     segmentInfo.buffered = this.sourceUpdater_.buffered();
     segment = segmentInfo.playlist.segments[segmentInfo.mediaIndex];
     this.currentTimeline_ = segmentInfo.timeline;
-
-    if (!this.alreadyAppended) {
-      segmentInfo.timestampOffset = 0;
-      this.alreadyAppended = true;
-    }
 
     if (segmentInfo.timestampOffset !== this.sourceUpdater_.timestampOffset()) {
       if (this.flvurl) {

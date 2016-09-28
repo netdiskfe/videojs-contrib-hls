@@ -70,6 +70,10 @@ export default class GapSkipper {
   waiting_() {
     if (!this.tech_.seeking()) {
       this.setTimer_();
+      if (!this.tech_.el_.waiting && !this.tech_.paused()) {
+        this.tech_.el_.waiting = true;
+        this.tech_.triggerEvent('waitstart');
+      }
     }
   }
 
@@ -87,14 +91,18 @@ export default class GapSkipper {
 
     let currentTime = this.tech_.currentTime();
 
-    if (this.consecutiveUpdates === 5 &&
+    if (this.consecutiveUpdates > 4 &&
         currentTime === this.lastRecordedTime) {
-      this.consecutiveUpdates++;
+      this.consecutiveUpdates = 0;
       this.waiting_();
     } else if (currentTime === this.lastRecordedTime) {
       this.consecutiveUpdates++;
     } else {
       this.consecutiveUpdates = 0;
+      if (this.tech_.el_.waiting && this.lastRecordedTime !== null) {
+        this.tech_.el_.waiting = false;
+        this.tech_.triggerEvent('waitend');
+      }
       this.lastRecordedTime = currentTime;
     }
   }
