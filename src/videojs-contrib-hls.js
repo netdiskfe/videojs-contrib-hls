@@ -510,7 +510,7 @@ const HlsSourceHandler = function(mode) {
         return false;
       }
 
-      if (mode === 'flash' || Hls.supportsNativeHls) {
+      if (mode === 'flash') {
         return mpegurlRE.test(srcObj.type) && HlsSourceHandler.canPlayType(srcObj.type);
       } else {
         return HlsSourceHandler.canPlayType(srcObj.type);
@@ -541,7 +541,7 @@ const HlsSourceHandler = function(mode) {
     },
     canPlayType(type) {
       let canplay = false;
-      if (mode === 'flash' || Hls.supportsNativeHls) {
+      if (mode === 'flash') {
         canplay = mpegurlRE.test(type) && HlsSourceHandler.canPlayType(type);
       } else {
         canplay = HlsSourceHandler.canPlayType(type);
