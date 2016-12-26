@@ -720,7 +720,7 @@ export default class SegmentLoader extends videojs.EventTarget {
     if (!request.aborted && error) {
       if (!abortWhenError) {
         this.handleUpdateEnd_();
-        this.hls_.player_.triggerEvent('loaderror', {
+        this.hls_.player_.triggerEvent('segmentloaderror', {
           status: request.status,
           message: request === keyXhrRequest ?
             'HLS key request error at URL: ' + segment.key.uri :
@@ -729,6 +729,15 @@ export default class SegmentLoader extends videojs.EventTarget {
           xhr: request
         });
         return;
+      } else {
+        this.hls_.player_.triggerEvent('segmentloadsuccess', {
+          status: request.status,
+          message: request === keyXhrRequest ?
+            'HLS key response success at URL: ' + segment.key.uri :
+            'HLS segment response success at URL: ' + segmentInfo.uri,
+          code: 0,
+          xhr: request
+        });
       }
       // abort will clear xhr_
       keyXhrRequest = this.xhr_.keyXhr;
@@ -753,13 +762,22 @@ export default class SegmentLoader extends videojs.EventTarget {
     }
 
     byterange = this.getByteRange(request.url);
-    if (byterange.length === 2 && byterange[1] - byterange[0] !== request.response.length) {
-      this.hls_.player_.triggerEvent('loaderror', {
+    if (byterange.length === 2 && byterange[1] - byterange[0] + 1 !== request.response.byteLength) {
+      this.hls_.player_.triggerEvent('segmentloaderror', {
         status: request.status,
         message: request === keyXhrRequest ?
           'HLS key response error at URL: ' + segment.key.uri :
           'HLS segment response error at URL: ' + segmentInfo.uri,
         code: 3,
+        xhr: request
+      });
+    } else {
+      this.hls_.player_.triggerEvent('segmentloadsuccess', {
+        status: request.status,
+        message: request === keyXhrRequest ?
+          'HLS key response success at URL: ' + segment.key.uri :
+          'HLS segment response success at URL: ' + segmentInfo.uri,
+        code: 0,
         xhr: request
       });
     }
@@ -826,6 +844,7 @@ export default class SegmentLoader extends videojs.EventTarget {
       this.xhr_ = null;
       this.processResponse_();
     }
+
   }
 
   /**
