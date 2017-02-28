@@ -262,17 +262,20 @@ class HlsHandler extends Component {
 
     // tech.player() is deprecated but setup a reference to HLS for
     // backwards-compatibility
-    if (tech.options_ && tech.options_.playerId) {
-      let _player = videojs(tech.options_.playerId);
+    let _player;
+    if (tech.options && tech.options_.tag) {
+      _player = videojs(tech.options_.tag);
+    } else if (tech.options_ && tech.options_.playerId) {
+      _player = videojs(tech.options_.playerId);
+    }
 
-      if (!_player.hasOwnProperty('hls')) {
-        Object.defineProperty(_player, 'hls', {
-          get: () => {
-            videojs.log.warn('player.hls is deprecated. Use player.tech.hls instead.');
-            return this;
-          }
-        });
-      }
+    if (_player && !_player.hasOwnProperty('hls')) {
+      Object.defineProperty(_player, 'hls', {
+        get: () => {
+          videojs.log.warn('player.hls is deprecated. Use player.tech.hls instead.');
+          return this;
+        }
+      });
     }
 
     this.tech_ = tech;
